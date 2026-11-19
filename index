@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#ff8fab" />
+<link rel="manifest" href="/manifest.webmanifest" />
+<link rel="icon" type="image/png" href="/icon-192.png" />
+<link rel="apple-touch-icon" href="/icon-192.png" />
+<title>Cute Expense Tracker 💖</title>
+<style>
+  :root {
+    --bg: #fdf6f0;
+    --card: #ffffff;
+    --pink: #ffd6e0;
+    --pink-deep: #ff8fab;
+    --mint: #d7f5e9;
+    --mint-deep: #5fb894;
+    --lavender: #e8e0f5;
+    --lavender-deep: #a48ad4;
+    --butter: #fff3d6;
+    --butter-deep: #e0a93e;
+    --peach: #ffe5d9;
+    --peach-deep: #f79256;
+    --ink: #5b4a54;
+    --ink-soft: #9a8892;
+    --shadow: 0 6px 18px rgba(180, 150, 165, 0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "Comic Sans MS", "Segoe UI", "Trebuchet MS", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 20px 14px 40px;
+    background-image: radial-gradient(circle at 10% 5%, #ffe9f0 0%, transparent 40%),
+                      radial-gradient(circle at 95% 30%, #e4f7ee 0%, transparent 35%),
+                      radial-gradient(circle at 50% 100%, #f0e9fa 0%, transparent 45%);
+  }
+
+  .app {
+    max-width: 560px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  header.app-title {
+    text-align: center;
+    padding: 6px 0 2px;
+  }
+  header.app-title h1 {
+    font-size: 1.7rem;
+    color: var(--pink-deep);
+    letter-spacing: 0.5px;
+  }
+  header.app-title p {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin-top: 4px;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 22px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+    border: 2px solid #fceef3;
+  }
+
+  .card h2 {
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .card h2 .dot { font-size: 1.1rem; }
+
+  /* ---------- Add Expense ---------- */
+  .form-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1 1 120px;
+  }
+  .field label {
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    padding-left: 6px;
+  }
+  .field input, .field select {
+    border: 2px solid #f3e3ea;
+    border-radius: 14px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--ink);
+    background: #fffafc;
+    outline: none;
+    min-width: 0;
+    width: 100%;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .field select {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%23ff8fab' stroke-width='2' fill='none' stroke-linecap='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+  .field input:focus, .field select:focus { border-color: var(--pink-deep); }
+
+  .btn-add {
+    flex: 1 1 100%;
+    margin-top: 4px;
+    border: none;
+    border-radius: 16px;
+    padding: 12px;
+    font-size: 1rem;
+    font-family: inherit;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(135deg, #ffa6c1, #ff8fab);
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(255, 143, 171, 0.4);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .btn-add:active { transform: scale(0.97); box-shadow: 0 2px 6px rgba(255, 143, 171, 0.4); }
+
+  .form-error {
+    margin-top: 8px;
+    font-size: 0.78rem;
+    color: #e0567a;
+    text-align: center;
+    min-height: 1em;
+  }
+
+  /* ---------- Today's Summary ---------- */
+  .summary-total {
+    text-align: center;
+    background: linear-gradient(135deg, var(--pink), #ffe9f0);
+    border-radius: 18px;
+    padding: 14px 10px;
+    margin-bottom: 14px;
+  }
+  .summary-total .label { font-size: 0.8rem; color: #c26d85; }
+  .summary-total .amount {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #d94f75;
+    margin-top: 2px;
+  }
+  .summary-total .count { font-size: 0.75rem; color: #c26d85; margin-top: 3px; }
+
+  .breakdown-title {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+    padding-left: 4px;
+  }
+  .cat-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 9px;
+  }
+  .cat-row:last-child { margin-bottom: 0; }
+  .cat-pill {
+    font-size: 0.78rem;
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+    min-width: 86px;
+    text-align: center;
+    font-weight: bold;
+  }
+  .cat-bar-track {
+    flex: 1;
+    height: 14px;
+    background: #f6eef2;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .cat-bar {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.35s ease;
+    min-width: 0;
+  }
+  .cat-amount {
+    font-size: 0.8rem;
+    font-weight: bold;
+    min-width: 62px;
+    text-align: right;
+  }
+  .cat-top { font-size: 0.72rem; }
+
+  .top-cat-note {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    background: var(--butter);
+    border-radius: 12px;
+    padding: 7px 10px;
+  }
+  .top-cat-note strong { color: #b9852a; }
+
+  /* ---------- Recent Expenses ---------- */
+  .expense-list { display: flex; flex-direction: column; gap: 9px; }
+
+  .expense-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fffafc;
+    border: 2px solid #f6eaef;
+    border-radius: 16px;
+    padding: 10px 12px;
+    animation: pop-in 0.25s ease;
+  }
+  @keyframes pop-in {
+    from { transform: scale(0.95); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+  .expense-item.removing {
+    transition: opacity 0.2s, transform 0.2s;
+    opacity: 0;
+    transform: translateX(24px) scale(0.95);
+  }
+
+  .expense-emoji {
+    font-size: 1.25rem;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+  .expense-info { flex: 1; min-width: 0; }
+  .expense-name {
+    font-size: 0.92rem;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .expense-meta { font-size: 0.72rem; color: var(--ink-soft); margin-top: 2px; }
+
+  .expense-amount { font-size: 0.95rem; font-weight: bold; white-space: nowrap; }
+
+  .btn-remove {
+    border: none;
+    background: #ffe3ea;
+    color: #e0567a;
+    border-radius: 10px;
+    width: 30px;
+    height: 30px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-remove:hover { background: #ffcdda; }
+  .btn-remove:active { transform: scale(0.9); }
+
+  .empty-note {
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    padding: 10px;
+  }
+
+  footer.note {
+    text-align: center;
+    font-size: 0.72rem;
+    color: #c3b4bc;
+    padding-top: 4px;
+  }
+
+  /* Category colours */
+  .c-food       { background: var(--pink);      color: #c2496c; }
+  .c-food-bar       { background: linear-gradient(90deg, #ffb3c9, #ff8fab); }
+  .c-transport  { background: var(--mint);      color: #3d8a6c; }
+  .c-transport-bar  { background: linear-gradient(90deg, #a9e8cd, #5fb894); }
+  .c-shopping   { background: var(--lavender);  color: #7a5fb0; }
+  .c-shopping-bar   { background: linear-gradient(90deg, #cdbcf0, #a48ad4); }
+  .c-fun        { background: var(--butter);    color: #b9852a; }
+  .c-fun-bar        { background: linear-gradient(90deg, #ffe1a1, #e0a93e); }
+  .c-others     { background: var(--peach);     color: #d0703a; }
+  .c-others-bar     { background: linear-gradient(90deg, #ffd0b8, #f79256); }
+
+  /* custom user categories — cycle through 5 pastel palettes */
+  .c-custom-0   { background: #dbe9fb;  color: #4a6fa5; }
+  .c-custom-0-bar   { background: linear-gradient(90deg, #bcd7f5, #7aa8e0); }
+  .c-custom-1   { background: #fde2e4;  color: #c25b6b; }
+  .c-custom-1-bar   { background: linear-gradient(90deg, #f9c9ce, #ef9aa3); }
+  .c-custom-2   { background: #e2f0d9;  color: #5e8c4a; }
+  .c-custom-2-bar   { background: linear-gradient(90deg, #c8e6b5, #9cc97f); }
+  .c-custom-3   { background: #fff0d1;  color: #b8860b; }
+  .c-custom-3-bar   { background: linear-gradient(90deg, #ffe3ae, #f5c96a); }
+  .c-custom-4   { background: #ece4f7;  color: #7b5ec7; }
+  .c-custom-4-bar   { background: linear-gradient(90deg, #d9c9f2, #b39ce8); }
+
+  /* ---------- Category manager ---------- */
+  .cat-manage {
+    margin-top: 10px;
+    border-top: 2px dashed #f3dfe8;
+    padding-top: 10px;
+  }
+  .cat-manage-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+  .cat-manage .field { flex: 2 1 110px; }
+  .cat-manage .field-cat-emoji { flex: 0 1 74px; }
+  .btn-mini {
+    border: none;
+    background: #f0e7f5;
+    color: #7b5ec7;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-mini:hover { background: #e2d2f0; }
+  .btn-mini:active { transform: scale(0.96); }
+  .cat-manage-hint { font-size: 0.7rem; color: var(--ink-soft); margin-top: 6px; padding-left: 4px; }
+
+  @media (max-width: 420px) {
+    body { padding: 14px 10px 30px; }
+    header.app-title h1 { font-size: 1.4rem; }
+    .card { padding: 15px; border-radius: 18px; }
+    .field { flex: 1 1 100%; }
+    .summary-total .amount { font-size: 1.7rem; }
+    .cat-amount { min-width: 54px; font-size: 0.75rem; }
+    .cat-pill { min-width: 74px; font-size: 0.72rem; }
+    .pixel-cat { display: none; }
+    .pixel-cat.mobile-keep { display: block; }
+  }
+
+  /* ---------- Pixel cats background ---------- */
+  .cats-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .pixel-cat {
+    position: absolute;
+    width: var(--px, 8px);
+    height: var(--px, 8px);
+    animation: cat-drift var(--dur, 60s) linear infinite;
+    animation-delay: var(--delay, 0s);
+    image-rendering: pixelated;
+  }
+  @keyframes cat-drift {
+    from { transform: translateY(110vh) rotate(0deg); }
+    to   { transform: translateY(-30vh) rotate(8deg); }
+  }
+
+  /* A pixel cat is a grid of box-shadow pixels: 1px transparent core + coloured shadows.
+     Each cat = ~11x9 grid. Drawn once per colour via CSS custom props. */
+  .pixel-cat::after {
+    content: "";
+    position: absolute;
+    width: var(--px);
+    height: var(--px);
+    --c: var(--cat-colour, #f8c8dc);
+    --o: calc(var(--px) * 0);
+    box-shadow:
+      /* ears */
+      calc(var(--px)*1) calc(var(--px)*0) 0 var(--c),
+      calc(var(--px)*2) calc(var(--px)*0) 0 var(--c),
+      calc(var(--px)*8) calc(var(--px)*0) 0 var(--c),
+      calc(var(--px)*9) calc(var(--px)*0) 0 var(--c),
+      /* head top */
+      calc(var(--px)*1) calc(var(--px)*1) 0 var(--c),
+      calc(var(--px)*2) calc(var(--px)*1) 0 var(--c),
+      calc(var(--px)*3) calc(var(--px)*1) 0 var(--c),
+      calc(var(--px)*7) calc(var(--px)*1) 0 var(--c),
+      calc(var(--px)*8) calc(var(--px)*1) 0 var(--c),
+      calc(var(--px)*9) calc(var(--px)*1) 0 var(--c),
+      /* eyes row */
+      calc(var(--px)*0) calc(var(--px)*2) 0 var(--c),
+      calc(var(--px)*1) calc(var(--px)*2) 0 var(--c),
+      calc(var(--px)*3) calc(var(--px)*2) 0 var(--c),
+      calc(var(--px)*4) calc(var(--px)*2) 0 var(--c),
+      calc(var(--px)*5) calc(var(--px)*2) 0 var(--c),
+      calc(var(--px)*6) calc(var(--px)*2) 0 var(--c),
+      calc(var(--px)*8) calc(var(--px)*2) 0 var(--c),
+      calc(var(--px)*9) calc(var(--px)*2) 0 var(--c),
+      calc(var(--px)*10) calc(var(--px)*2) 0 var(--c),
+      /* face */
+      calc(var(--px)*0) calc(var(--px)*3) 0 var(--c),
+      calc(var(--px)*2) calc(var(--px)*3) 0 var(--c),
+      calc(var(--px)*3) calc(var(--px)*3) 0 var(--c),
+      calc(var(--px)*4) calc(var(--px)*3) 0 var(--c),
+      calc(var(--px)*5) calc(var(--px)*3) 0 var(--c),
+      calc(var(--px)*6) calc(var(--px)*3) 0 var(--c),
+      calc(var(--px)*7) calc(var(--px)*3) 0 var(--c),
+      calc(var(--px)*9) calc(var(--px)*3) 0 var(--c),
+      calc(var(--px)*10) calc(var(--px)*3) 0 var(--c),
+      /* body */
+      calc(var(--px)*0) calc(var(--px)*4) 0 var(--c),
+      calc(var(--px)*1) calc(var(--px)*4) 0 var(--c),
+      calc(var(--px)*2) calc(var(--px)*4) 0 var(--c),
+      calc(var(--px)*3) calc(var(--px)*4) 0 var(--c),
+      calc(var(--px)*4) calc(var(--px)*4) 0 var(--c),
+      calc(var(--px)*5) calc(var(--px)*4) 0 var(--c),
+      calc(var(--px)*6) calc(var(--px)*4) 0 var(--c),
+      calc(var(--px)*7) calc(var(--px)*4) 0 var(--c),
+      calc(var(--px)*8) calc(var(--px)*4) 0 var(--c),
+      calc(var(--px)*9) calc(var(--px)*4) 0 var(--c),
+      calc(var(--px)*10) calc(var(--px)*4) 0 var(--c),
+      /* body row 2 */
+      calc(var(--px)*0) calc(var(--px)*5) 0 var(--c),
+      calc(var(--px)*1) calc(var(--px)*5) 0 var(--c),
+      calc(var(--px)*2) calc(var(--px)*5) 0 var(--c),
+      calc(var(--px)*3) calc(var(--px)*5) 0 var(--c),
+      calc(var(--px)*4) calc(var(--px)*5) 0 var(--c),
+      calc(var(--px)*5) calc(var(--px)*5) 0 var(--c),
+      calc(var(--px)*6) calc(var(--px)*5) 0 var(--c),
+      calc(var(--px)*7) calc(var(--px)*5) 0 var(--c),
+      calc(var(--px)*8) calc(var(--px)*5) 0 var(--c),
+      calc(var(--px)*9) calc(var(--px)*5) 0 var(--c),
+      calc(var(--px)*10) calc(var(--px)*5) 0 var(--c),
+      /* tail + legs */
+      calc(var(--px)*0) calc(var(--px)*6) 0 var(--c),
+      calc(var(--px)*1) calc(var(--px)*6) 0 var(--c),
+      calc(var(--px)*2) calc(var(--px)*6) 0 var(--c),
+      calc(var(--px)*3) calc(var(--px)*6) 0 var(--c),
+      calc(var(--px)*4) calc(var(--px)*6) 0 var(--c),
+      calc(var(--px)*5) calc(var(--px)*6) 0 var(--c),
+      calc(var(--px)*6) calc(var(--px)*6) 0 var(--c),
+      calc(var(--px)*7) calc(var(--px)*6) 0 var(--c),
+      calc(var(--px)*8) calc(var(--px)*6) 0 var(--c),
+      calc(var(--px)*9) calc(var(--px)*6) 0 var(--c),
+      /* paws */
+      calc(var(--px)*1) calc(var(--px)*7) 0 var(--c),
+      calc(var(--px)*2) calc(var(--px)*7) 0 var(--c),
+      calc(var(--px)*3) calc(var(--px)*7) 0 var(--c),
+      calc(var(--px)*4) calc(var(--px)*7) 0 var(--c),
+      calc(var(--px)*5) calc(var(--px)*7) 0 var(--c),
+      calc(var(--px)*6) calc(var(--px)*7) 0 var(--c),
+      calc(var(--px)*7) calc(var(--px)*7) 0 var(--c),
+      calc(var(--px)*8) calc(var(--px)*7) 0 var(--c);
+  }
+
+  /* eye + face detail layer */
+  .pixel-cat::before {
+    content: "";
+    position: absolute;
+    width: var(--px);
+    height: var(--px);
+    --e: #5b4a54;
+    --n: #e88aa8;
+    box-shadow:
+      calc(var(--px)*3) calc(var(--px)*2) 0 var(--e),
+      calc(var(--px)*7) calc(var(--px)*2) 0 var(--e),
+      calc(var(--px)*5) calc(var(--px)*3) 0 var(--n),
+      calc(var(--px)*4) calc(var(--px)*3) 0 var(--n);
+  }
+
+  .cat-1 { left: 3%;  top: 0; --px: 8px;  --cat-colour: #f8c8dc; --dur: 75s;  --delay: -20s; }
+  .cat-2 { left: 88%; top: 0; --px: 10px; --cat-colour: #cfe9dd; --dur: 95s;  --delay: -50s; }
+  .cat-3 { left: 46%; top: 0; --px: 6px;  --cat-colour: #e6dcf5; --dur: 65s;  --delay: -10s; }
+  .cat-4 { left: 70%; top: 0; --px: 7px;  --cat-colour: #fdeec4; --dur: 85s;  --delay: -35s; }
+  .cat-5 { left: 18%; top: 0; --px: 9px;  --cat-colour: #ffe5d9; --dur: 105s; --delay: -70s; }
+  .cat-6 { left: 32%; top: 0; --px: 5px;  --cat-colour: #f8c8dc; --dur: 80s;  --delay: -55s; }
+
+  /* ---------- Login ---------- */
+  #auth-section { text-align: center; }
+  #auth-section .card { max-width: 400px; margin: 0 auto; }
+
+  .auth-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    background: #fdeef4;
+    border-radius: 999px;
+    padding: 4px;
+  }
+  .auth-tab {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--ink-soft);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: bold;
+    padding: 8px 0;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .auth-tab.active {
+    background: #fff;
+    color: var(--pink-deep);
+    box-shadow: 0 2px 6px rgba(255, 143, 171, 0.25);
+  }
+
+  .auth-error {
+    color: #e0567a;
+    font-size: 0.78rem;
+    min-height: 1.1em;
+    margin-top: 8px;
+    text-align: center;
+  }
+
+  .top-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+  }
+  .top-bar[hidden] { display: none; }
+  #auth-section[hidden] { display: none; }
+  #app-main[hidden] { display: none; }
+  .who {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    background: #fff;
+    padding: 6px 12px;
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+    max-width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .btn-logout {
+    border: none;
+    background: #fff;
+    color: var(--ink-soft);
+    font-family: inherit;
+    font-size: 0.78rem;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+  .btn-logout:hover { color: #e0567a; }
+</style>
+</head>
+<body>
+<div class="cats-bg" aria-hidden="true">
+  <div class="pixel-cat cat-1"></div>
+  <div class="pixel-cat cat-2"></div>
+  <div class="pixel-cat cat-3"></div>
+  <div class="pixel-cat cat-4"></div>
+  <div class="pixel-cat cat-5"></div>
+  <div class="pixel-cat cat-6 mobile-keep cat-2" style="left:80%"></div>
+</div>
+<div class="app">
+
+  <div class="top-bar" id="top-bar" hidden>
+    <span class="who" id="who">meow</span>
+    <button class="btn-logout" id="btn-logout">Log out</button>
+  </div>
+
+  <header class="app-title">
+    <h1 id="app-title">💕 Cute Expense Tracker</h1>
+    <p id="tagline">Track today's little spends ~</p>
+  </header>
+
+  <!-- Login / Register -->
+  <section class="card" id="auth-section" hidden>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login">Log in</button>
+      <button class="auth-tab" id="tab-register">Sign up</button>
+    </div>
+    <form id="auth-form" autocomplete="on">
+      <div class="form-row">
+        <div class="field" id="field-name" style="flex:1 1 100%" hidden>
+          <label for="auth-name">Your name</label>
+          <input id="auth-name" type="text" placeholder="e.g. Diana" maxlength="40" autocomplete="name" />
+        </div>
+        <div class="field" style="flex:1 1 100%">
+          <label for="auth-id">Email or phone number</label>
+          <input id="auth-id" type="text" placeholder="you@email.com or 0123456789" maxlength="60" />
+        </div>
+        <div class="field" style="flex:1 1 100%">
+          <label for="auth-pass">Password</label>
+          <input id="auth-pass" type="password" placeholder="at least 6 characters" minlength="6" maxlength="100" />
+        </div>
+        <button type="submit" class="btn-add" id="auth-submit">✿ Log in</button>
+      </div>
+      <div class="auth-error" id="auth-error"></div>
+    </form>
+  </section>
+
+  <!-- Email verification code -->
+  <section class="card" id="verify-section" hidden>
+    <h2><span class="dot">💌</span> Check your email</h2>
+    <p style="font-size:0.82rem; color:var(--ink-soft); margin-bottom:12px;">
+      We sent a 6-digit code to <strong id="verify-email"></strong>. Enter it below to finish signing up.
+    </p>
+    <form id="verify-form">
+      <div class="form-row">
+        <div class="field" style="flex:1 1 100%">
+          <label for="verify-code">Verification code</label>
+          <input id="verify-code" type="text" inputmode="numeric" placeholder="123456" maxlength="6" style="text-align:center; font-size:1.3rem; letter-spacing:6px;" />
+        </div>
+        <button type="submit" class="btn-add">✿ Verify</button>
+      </div>
+      <div class="auth-error" id="verify-error"></div>
+      <button type="button" class="btn-mini" id="btn-resend" style="margin-top:6px;">Resend code</button>
+    </form>
+  </section>
+
+  <div id="app-main" hidden>
+
+  <!-- Section 1: Add Expense -->
+  <section class="card" id="section-add">
+    <h2><span class="dot">🧸</span> Add Expense</h2>
+    <form id="add-form" autocomplete="off">
+      <div class="form-row">
+        <div class="field">
+          <label for="inp-name">Item name</label>
+          <input id="inp-name" type="text" placeholder="e.g. Nasi lemak" maxlength="40" />
+        </div>
+        <div class="field">
+          <label for="inp-amount">Amount (RM)</label>
+          <input id="inp-amount" type="number" placeholder="0.00" min="0" step="0.01" inputmode="decimal" />
+        </div>
+        <div class="field">
+          <label for="inp-category">Category</label>
+          <select id="inp-category"></select>
+        </div>
+        <button type="submit" class="btn-add">✿ Add Expense</button>
+      </div>
+      <div class="form-error" id="form-error"></div>
+    </form>
+    <div class="cat-manage">
+      <div class="cat-manage-row">
+        <div class="field field-cat-emoji">
+          <label for="cat-emoji">New cat. emoji</label>
+          <input id="cat-emoji" type="text" placeholder="🧋" maxlength="4" />
+        </div>
+        <div class="field">
+          <label for="cat-name">New category name</label>
+          <input id="cat-name" type="text" placeholder="e.g. Snacks" maxlength="20" />
+        </div>
+        <button type="button" class="btn-mini" id="btn-add-cat">＋ Add category</button>
+      </div>
+      <div class="cat-manage-hint">Make your own categories — they'll appear in the dropdown and breakdown 💕</div>
+    </div>
+  </section>
+
+  <!-- Section 2: Today's Summary -->
+  <section class="card" id="section-summary">
+    <h2><span class="dot">🌈</span> Today's Summary</h2>
+    <div class="summary-total">
+      <div class="label">Total spent today</div>
+      <div class="amount" id="sum-total">RM 0.00</div>
+      <div class="count" id="sum-count">0 expenses</div>
+    </div>
+    <div class="breakdown-title">Where it went 🎨</div>
+    <div id="cat-breakdown"></div>
+    <div class="top-cat-note" id="top-cat-note"></div>
+  </section>
+
+  <!-- Section 3: Recent Expenses -->
+  <section class="card" id="section-recent">
+    <h2><span class="dot">🧾</span> Recent Expenses</h2>
+    <div class="expense-list" id="expense-list"></div>
+  </section>
+
+  <footer class="note" id="foot-note">Nothing is saved — just for today, just for fun 💫</footer>
+  </div><!-- /app-main -->
+</div>
+
+<script>
+  // Built-in categories; custom ones are loaded from the server per user
+  var CATEGORIES = {
+    food:      { label: "🍽️ Food",      bare: "Food",      emoji: "🍽️", cls: "c-food" },
+    transport: { label: "🚌 Transport",  bare: "Transport", emoji: "🚌", cls: "c-transport" },
+    shopping:  { label: "🛍️ Shopping",   bare: "Shopping",  emoji: "🛍️", cls: "c-shopping" },
+    fun:       { label: "🎮 Fun",        bare: "Fun",       emoji: "🎮", cls: "c-fun" },
+    others:    { label: "✨ Others",     bare: "Others",    emoji: "✨", cls: "c-others" }
+  };
+
+  var SAMPLE = [
+    { id: 1, name: "Nasi lemak + teh tarik", amount: 8.50, category: "food" },
+    { id: 2, name: "Rapid KL ride to work",  amount: 3.00, category: "transport" },
+    { id: 3, name: "Boba tea at SS15",       amount: 12.90, category: "fun" }
+  ];
+  var nextId = 100;
+  var expenses = [];
+  var live = false; // true when the server API is reachable
+  var meName = "";
+
+  var $ = function (id) { return document.getElementById(id); };
+  var fmt = function (n) {
+    return "RM " + n.toFixed(2);
+  };
+
+  // ---------- Auth ----------
+  var authMode = "login"; // or "register"
+  var pendingVerifyId = "";
+
+  function api(path, opts) {
+    return fetch(path, opts).then(function (r) {
+      if (!r.ok) { throw new Error("HTTP " + r.status); }
+      return r.json();
+    });
+  }
+
+  function emojiFor(catKey) {
+    var cat = CATEGORIES[catKey];
+    return cat ? cat.emoji : "✨";
+  }
+
+  function showApp(name) {
+    meName = name || "friend";
+    $("auth-section").hidden = true;
+    $("verify-section").hidden = true;
+    $("app-main").hidden = false;
+    $("top-bar").hidden = false;
+    $("who").textContent = "🐾 " + meName;
+    var first = meName.split(" ")[0];
+    $("app-title").textContent = "💕 " + first + "'s Expense Tracker";
+    $("tagline").textContent = "Track your little spends, " + first + " ~";
+    loadCategories();
+    loadFromServer();
+  }
+
+  function showAuth() {
+    $("auth-section").hidden = false;
+    $("verify-section").hidden = true;
+    $("app-main").hidden = true;
+    $("top-bar").hidden = true;
+    $("app-title").textContent = "💕 Cute Expense Tracker";
+    $("tagline").textContent = "Track today's little spends ~";
+    expenses = [];
+    live = false;
+    renderList();
+    renderSummary();
+    $("auth-id").focus();
+  }
+
+  function showVerify(email) {
+    pendingVerifyId = email;
+    $("auth-section").hidden = true;
+    $("verify-section").hidden = false;
+    $("app-main").hidden = true;
+    $("top-bar").hidden = true;
+    $("verify-email").textContent = email;
+    $("verify-code").value = "";
+    $("verify-error").textContent = "";
+    $("verify-code").focus();
+  }
+
+  function setAuthMode(mode) {
+    authMode = mode;
+    $("tab-login").classList.toggle("active", mode === "login");
+    $("tab-register").classList.toggle("active", mode === "register");
+    $("field-name").hidden = mode !== "register";
+    $("auth-submit").textContent = mode === "login" ? "✿ Log in" : "✿ Create account";
+    $("auth-error").textContent = "";
+  }
+
+  $("tab-login").addEventListener("click", function () { setAuthMode("login"); });
+  $("tab-register").addEventListener("click", function () { setAuthMode("register"); });
+
+  $("auth-form").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var name = $("auth-name").value.trim();
+    var id = $("auth-id").value.trim();
+    var pass = $("auth-pass").value;
+    var errEl = $("auth-error");
+
+    if (authMode === "register" && !name) { errEl.textContent = "Please tell us your name 🥺"; return; }
+    if (!id) { errEl.textContent = "Please enter your email or phone number 🥺"; return; }
+    if (pass.length < 6) { errEl.textContent = "Password needs at least 6 characters 🙏"; return; }
+    errEl.textContent = "";
+
+    var btn = $("auth-submit");
+    btn.disabled = true;
+    api("/api/auth/" + authMode, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: name, id: id, password: pass })
+    }).then(function (res) {
+      if (res.needsVerification) {
+        showVerify(id.trim());
+      } else {
+        showApp(res.name);
+      }
+    }).catch(function () {
+      errEl.textContent = authMode === "login"
+        ? "Wrong details — or maybe sign up first? 🐱"
+        : "Could not create account — that email/phone may already be used";
+    }).finally(function () {
+      btn.disabled = false;
+    });
+  });
+
+  $("verify-form").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var code = $("verify-code").value.trim();
+    var errEl = $("verify-error");
+    if (!/^\d{6}$/.test(code)) { errEl.textContent = "Enter the 6-digit code from your email 💌"; return; }
+    errEl.textContent = "";
+
+    api("/api/auth/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: pendingVerifyId, code: code })
+    }).then(function (res) {
+      showApp(res.name);
+    }).catch(function () {
+      errEl.textContent = "That code didn't match — try again?";
+    });
+  });
+
+  $("btn-resend").addEventListener("click", function () {
+    $("verify-error").textContent = "";
+    api("/api/auth/resend", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: pendingVerifyId })
+    }).then(function () {
+      $("verify-error").textContent = "New code sent 💌";
+    }).catch(function () {
+      $("verify-error").textContent = "Could not resend — try again in a little while";
+    });
+  });
+
+  $("btn-logout").addEventListener("click", function () {
+    api("/api/auth/logout", { method: "POST" }).catch(function () {}).then(function () {
+      $("auth-pass").value = "";
+      showAuth();
+    });
+  });
+
+  // ---------- Categories ----------
+
+  function fillCategoryDropdown(keepKey) {
+    var sel = $("inp-category");
+    var current = keepKey || sel.value;
+    sel.innerHTML = "";
+    Object.keys(CATEGORIES).forEach(function (key) {
+      var cat = CATEGORIES[key];
+      var opt = document.createElement("option");
+      opt.value = key;
+      opt.textContent = cat.emoji + " " + cat.bare;
+      sel.appendChild(opt);
+    });
+    if (current && CATEGORIES[current]) { sel.value = current; }
+  }
+
+  function loadCategories() {
+    return api("/api/categories").then(function (cats) {
+      CATEGORIES = {};
+      cats.forEach(function (c) {
+        CATEGORIES[c.key] = { label: c.emoji + " " + c.label, bare: c.label, emoji: c.emoji, cls: c.cls };
+      });
+      fillCategoryDropdown();
+    }).catch(function () {
+      // offline fallback: built-ins only
+      CATEGORIES = {
+        food:      { label: "🍽️ Food",      bare: "Food",      emoji: "🍽️", cls: "c-food" },
+        transport: { label: "🚌 Transport",  bare: "Transport", emoji: "🚌", cls: "c-transport" },
+        shopping:  { label: "🛍️ Shopping",   bare: "Shopping",  emoji: "🛍️", cls: "c-shopping" },
+        fun:       { label: "🎮 Fun",        bare: "Fun",       emoji: "🎮", cls: "c-fun" },
+        others:    { label: "✨ Others",     bare: "Others",    emoji: "✨", cls: "c-others" }
+      };
+      fillCategoryDropdown();
+    });
+  }
+
+  $("btn-add-cat").addEventListener("click", function () {
+    var label = $("cat-name").value.trim();
+    var emoji = $("cat-emoji").value.trim();
+    if (!label) { alert("Give your category a name first 🥺"); return; }
+    if (!live) { alert("Custom categories need the server — reconnect and try again"); return; }
+
+    api("/api/categories", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ label: label, emoji: emoji })
+    }).then(function (created) {
+      CATEGORIES[created.key] = {
+        label: created.emoji + " " + created.label,
+        bare: created.label,
+        emoji: created.emoji,
+        cls: created.cls
+      };
+      fillCategoryDropdown(created.key);
+      $("cat-name").value = "";
+      $("cat-emoji").value = "";
+      renderSummary();
+    }).catch(function () {
+      alert("Could not add category — maybe you've reached the limit (12)?");
+    });
+  });
+
+  function loadFromServer() {
+    return api("/api/expenses").then(function (rows) {
+      expenses = rows;
+      live = true;
+      renderList();
+      renderSummary();
+      $("foot-note").textContent = "Your expenses are saved to the database 💾";
+    }).catch(function () {
+      expenses = SAMPLE.slice();
+      live = false;
+      renderList();
+      renderSummary();
+    });
+  }
+
+  // On load: already logged in?
+  api("/api/auth/me").then(function (res) {
+    showApp(res.name || res.who);
+  }).catch(function () {
+    showAuth();
+  });
+
+  // Register service worker for offline support / installability
+  if ("serviceWorker" in navigator && location.protocol !== "file:") {
+    navigator.serviceWorker.register("/sw.js").catch(function () {});
+  }
+
+  function renderSummary() {
+    var total = 0;
+    var byCat = {};
+    for (var i = 0; i < expenses.length; i++) {
+      var e = expenses[i];
+      total += e.amount;
+      byCat[e.category] = (byCat[e.category] || 0) + e.amount;
+    }
+
+    $("sum-total").textContent = fmt(total);
+    $("sum-count").textContent = expenses.length + (expenses.length === 1 ? " expense" : " expenses");
+
+    var box = $("cat-breakdown");
+    box.innerHTML = "";
+
+    var catKeys = Object.keys(byCat).sort(function (a, b) { return byCat[b] - byCat[a]; });
+    var maxVal = catKeys.length ? byCat[catKeys[0]] : 0;
+
+    if (!catKeys.length) {
+      box.innerHTML = '<div class="empty-note">No spending yet today ~</div>';
+    } else {
+      for (var j = 0; j < catKeys.length; j++) {
+        var key = catKeys[j];
+        var cat = CATEGORIES[key];
+        var row = document.createElement("div");
+        row.className = "cat-row";
+        var pct = maxVal > 0 ? Math.round((byCat[key] / maxVal) * 100) : 0;
+        row.innerHTML =
+          '<span class="cat-pill ' + cat.cls + '">' + cat.label + "</span>" +
+          '<div class="cat-bar-track"><div class="cat-bar ' + cat.cls + '-bar" style="width:' + pct + '%"></div></div>' +
+          '<span class="cat-amount">' + fmt(byCat[key]) + "</span>";
+        box.appendChild(row);
+      }
+    }
+
+    var note = $("top-cat-note");
+    if (catKeys.length) {
+      var top = CATEGORIES[catKeys[0]];
+      note.innerHTML = "Top spend today: <strong>" + top.label + "</strong> with " + fmt(byCat[catKeys[0]]) + " 💸";
+    } else {
+      note.textContent = "Add an expense to see your breakdown 🌷";
+    }
+  }
+
+  function renderList() {
+    var list = $("expense-list");
+    list.innerHTML = "";
+
+    if (!expenses.length) {
+      list.innerHTML = '<div class="empty-note">All clear! Nothing spent yet 🎉</div>';
+      return;
+    }
+
+    // Most recent first
+    var sorted = expenses.slice().reverse();
+    for (var i = 0; i < sorted.length; i++) {
+      (function (exp) {
+        var cat = CATEGORIES[exp.category] || CATEGORIES.others;
+        var item = document.createElement("div");
+        item.className = "expense-item";
+        item.innerHTML =
+          '<div class="expense-emoji ' + cat.cls + '">' + emojiFor(exp.category) + "</div>" +
+          '<div class="expense-info">' +
+            '<div class="expense-name"></div>' +
+            '<div class="expense-meta">' + cat.label + "</div>" +
+          "</div>" +
+          '<div class="expense-amount">' + fmt(exp.amount) + "</div>" +
+          '<button class="btn-remove" title="Remove">✕</button>';
+        item.querySelector(".expense-name").textContent = exp.name;
+
+        item.querySelector(".btn-remove").addEventListener("click", function () {
+          function drop() {
+            expenses = expenses.filter(function (x) { return x.id !== exp.id; });
+            renderList();
+            renderSummary();
+          }
+          if (!live) { drop(); return; }
+          item.classList.add("removing");
+          api("/api/expenses/" + exp.id, { method: "DELETE" })
+            .then(function () {
+              setTimeout(drop, 180);
+            })
+            .catch(function () {
+              item.classList.remove("removing");
+              alert("Could not remove — please try again");
+            });
+        });
+
+        list.appendChild(item);
+      })(sorted[i]);
+    }
+  }
+
+  $("add-form").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var nameEl = $("inp-name");
+    var amountEl = $("inp-amount");
+    var catEl = $("inp-category");
+    var errEl = $("form-error");
+
+    var name = nameEl.value.trim();
+    var amount = parseFloat(amountEl.value);
+
+    if (!name) { errEl.textContent = "Please give your item a cute name 🥺"; nameEl.focus(); return; }
+    if (isNaN(amount) || amount <= 0) { errEl.textContent = "Please enter an amount more than 0 🙏"; amountEl.focus(); return; }
+
+        errEl.textContent = "";
+
+        function clearForm() {
+          nameEl.value = "";
+          amountEl.value = "";
+          nameEl.focus();
+        }
+
+        function done() {
+          renderList();
+          renderSummary();
+          clearForm();
+        }
+
+        if (!live) {
+          expenses.push({ id: nextId++, name: name, amount: amount, category: catEl.value });
+          done();
+          return;
+        }
+
+        var btn = ev.target.querySelector(".btn-add");
+        btn.disabled = true;
+        api("/api/expenses", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: name, amount: amount, category: catEl.value })
+        }).then(function (created) {
+          expenses.push(created);
+          done();
+        }).catch(function (err) {
+          errEl.textContent = "Could not save — please try again";
+        }).finally(function () {
+          btn.disabled = false;
+        });
+      });
+
+</script></body>
+</html>
